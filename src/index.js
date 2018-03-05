@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDom, { render } from "react-dom";
 import Styles from "./styles.css";
+import _ from "lodash";
 
 const Stars = props => {
-  const numberOfStars = 5;
+  // Obtener un numero random del 1 al 9
+  const numberOfStars = 1 + Math.floor(Math.random() * 9);
 
   let stars = [];
 
@@ -35,12 +37,14 @@ const Answer = props => {
 };
 
 const Numbers = props => {
+  let arrayOfNumbers = _.range(1, 9);
   return (
     <div className="card text-center">
       <div>
-        <span>1</span>
+        {arrayOfNumbers.map(numbers => <span key={numbers}>{numbers}</span>)}
+        {/*<span>1</span>
         <span className="selected">2</span>
-        <span className="used">3</span>
+        <span className="used">3</span>*/}
       </div>
     </div>
   );
