@@ -5,7 +5,7 @@ import _ from "lodash";
 
 const Stars = props => {
   // Obtener un numero random del 1 al 9
-  const numberOfStars = 1 + Math.floor(Math.random() * 9);
+  // const numberOfStars = 1 + Math.floor(Math.random() * 9);
 
   /*let stars = [];
 
@@ -15,7 +15,9 @@ const Stars = props => {
 
   return (
     <div className="col-5">
-      {_.range(numberOfStars).map(i => <i key={i} className="fas fa-star" />)}
+      {_.range(props.numberOfStars).map(i => (
+        <i key={i} className="fas fa-star" />
+      ))}
       {/*{stars}*/}
       {/*<i className="fas fa-star" />
       <i className="fas fa-star" />
@@ -54,7 +56,11 @@ const Numbers = props => {
     <div className="card text-center">
       <div>
         {Numbers.list.map((number, i) => (
-          <span key={i} className={numberClassName(number)}>
+          <span
+            key={i}
+            className={numberClassName(number)}
+            onClick={() => props.selectedNumber(number)}
+          >
             {number}
           </span>
         ))}
@@ -69,7 +75,17 @@ Numbers.list = _.range(1, 10);
 
 class Game extends React.Component {
   state = {
-    selectedNumbers: [2, 4]
+    selectedNumbers: [],
+    randomNumberOfStars: 1 + Math.floor(Math.random() * 9)
+  };
+
+  selectedNumber = clikedNumber => {
+    if (this.state.selectedNumbers.indexOf(clikedNumber) >= 0) {
+      return;
+    }
+    this.setState(prevState => ({
+      selectedNumbers: prevState.selectedNumbers.concat(clikedNumber)
+    }));
   };
 
   render() {
@@ -78,12 +94,15 @@ class Game extends React.Component {
         <h2>Play Nine</h2>
         <hr />
         <div className="row">
-          <Stars />
+          <Stars numberOfStars={this.state.randomNumberOfStars} />
           <Button />
           <Answer selectedNumbers={this.state.selectedNumbers} />
         </div>
         <br />
-        <Numbers selectedNumbers={this.state.selectedNumbers} />
+        <Numbers
+          selectedNumbers={this.state.selectedNumbers}
+          selectedNumber={this.selectedNumber}
+        />
       </div>
     );
   }
