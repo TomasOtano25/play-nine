@@ -1,3 +1,5 @@
+// Codigo refactorizado
+
 import React from "react";
 import ReactDom, { render } from "react-dom";
 import Styles from "./styles.css";
@@ -30,7 +32,10 @@ const Stars = props => {
 const Button = props => {
   return (
     <div className="col-2">
-      <button className="btn">=</button>
+      {/* disabled efectua un <<if>>*/}
+      <button className="btn" disabled={props.selectedNumbers.length === 0}>
+        =
+      </button>
     </div>
   );
 };
@@ -101,21 +106,23 @@ class Game extends React.Component {
   };
 
   render() {
+    // Esta constante me permite evitar el uso del termino <<this.state>>
+    const { selectedNumbers, randomNumberOfStars } = this.state;
     return (
       <div className="container">
         <h2>Play Nine</h2>
         <hr />
         <div className="row">
-          <Stars numberOfStars={this.state.randomNumberOfStars} />
-          <Button />
+          <Stars numberOfStars={randomNumberOfStars} />
+          <Button selectedNumbers={selectedNumbers} />
           <Answer
-            selectedNumbers={this.state.selectedNumbers}
+            selectedNumbers={selectedNumbers}
             unselectedNumber={this.unselectedNumber}
           />
         </div>
         <br />
         <Numbers
-          selectedNumbers={this.state.selectedNumbers}
+          selectedNumbers={selectedNumbers}
           selectedNumber={this.selectedNumber}
         />
       </div>
