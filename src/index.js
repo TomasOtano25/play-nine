@@ -30,12 +30,39 @@ const Stars = props => {
 };
 
 const Button = props => {
+  let button;
+  switch (props.answerIsCorrect) {
+    case true:
+      button = (
+        <button className="btn btn-success">
+          <i class="fas fa-check" />
+        </button>
+      );
+      break;
+    case false:
+      button = button = (
+        <button className="btn btn-danger">
+          <i class="fas fa-times" />
+        </button>
+      );
+      break;
+    default:
+      button = (
+        <button
+          className="btn"
+          onClick={props.checkAnswer}
+          disabled={props.selectedNumbers.length === 0}
+        >
+          =
+        </button>
+      );
+      break;
+  }
+
   return (
     <div className="col-2">
       {/* disabled efectua un <<if>>*/}
-      <button className="btn" disabled={props.selectedNumbers.length === 0}>
-        =
-      </button>
+      {button}
     </div>
   );
 };
@@ -85,7 +112,9 @@ Numbers.list = _.range(1, 10);
 class Game extends React.Component {
   state = {
     selectedNumbers: [],
-    randomNumberOfStars: 1 + Math.floor(Math.random() * 9)
+    randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+    answerIsCorrect: null,
+    usedNumbers: [4, 7]
   };
 
   selectedNumber = clikedNumber => {
@@ -93,28 +122,49 @@ class Game extends React.Component {
       return;
     }
     this.setState(prevState => ({
+      // Restablezco el state <<answerIsCorrect>>
+      answerIsCorrect: null,
       selectedNumbers: prevState.selectedNumbers.concat(clikedNumber)
     }));
   };
 
   unselectedNumber = clikedNumber => {
     this.setState(prevState => ({
+      answerIsCorrect: null,
       selectedNumbers: prevState.selectedNumbers.filter(
         number => number !== clikedNumber
       )
     }));
   };
 
+  checkAnswer = () => {
+    this.setState(prevState => ({
+      answerIsCorrect:
+        prevState.randomNumberOfStars ===
+        prevState.selectedNumbers.reduce((acc, n) => acc + n, 0)
+    }));
+  };
+
   render() {
     // Esta constante me permite evitar el uso del termino <<this.state>>
-    const { selectedNumbers, randomNumberOfStars } = this.state;
+    const {
+      selectedNumbers,
+      randomNumberOfStars,
+      answerIsCorrect,
+      usedNumbers
+    } = this.state;
+
     return (
       <div className="container">
         <h2>Play Nine</h2>
         <hr />
         <div className="row">
           <Stars numberOfStars={randomNumberOfStars} />
-          <Button selectedNumbers={selectedNumbers} />
+          <Button
+            selectedNumbers={selectedNumbers}
+            checkAnswer={this.checkAnswer}
+            answerIsCorrect={answerIsCorrect}
+          />
           <Answer
             selectedNumbers={selectedNumbers}
             unselectedNumber={this.unselectedNumber}
@@ -124,6 +174,7 @@ class Game extends React.Component {
         <Numbers
           selectedNumbers={selectedNumbers}
           selectedNumber={this.selectedNumber}
+          usedNumbers={usedNumbers}
         />
       </div>
     );
