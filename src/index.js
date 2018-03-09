@@ -17,9 +17,13 @@ const Stars = props => {
 
   return (
     <div className="col-5">
-      {_.range(props.numberOfStars).map(i => (
-        <i key={i} className="fas fa-star" />
-      ))}
+      <div className="row">
+        {_.range(props.numberOfStars).map(i => (
+          <div key={i}>
+            <i className="fas fa-star" />
+          </div>
+        ))}
+      </div>
       {/*{stars}*/}
       {/*<i className="fas fa-star" />
       <i className="fas fa-star" />
@@ -34,16 +38,20 @@ const Button = props => {
   switch (props.answerIsCorrect) {
     case true:
       button = (
-        <button className="btn btn-success">
-          <i class="fas fa-check" />
-        </button>
+        <div>
+          <button className="btn btn-success" onClick={props.acceptAnswer}>
+            <i className="fas fa-check" />
+          </button>
+        </div>
       );
       break;
     case false:
-      button = button = (
-        <button className="btn btn-danger">
-          <i class="fas fa-times" />
-        </button>
+      button = (
+        <div>
+          <button className="btn btn-danger">
+            <i className="fas fa-times" />
+          </button>
+        </div>
       );
       break;
     default:
@@ -60,9 +68,18 @@ const Button = props => {
   }
 
   return (
-    <div className="col-2">
+    <div className="col-2 text-center ">
       {/* disabled efectua un <<if>>*/}
       {button}
+      <br />
+      <br />
+      <button
+        className="btn btn-warning btn-sm"
+        disabled={props.redraws === 0}
+        onClick={props.redraw}
+      >
+        <i className="fas fa-sync-alt" /> {props.redraws}
+      </button>
     </div>
   );
 };
@@ -83,6 +100,9 @@ const Answer = props => {
 const Numbers = props => {
   // let arrayOfNumbers = _.range(1, 10);
   const numberClassName = number => {
+    if (props.usedNumbers.indexOf(number) >= 0) {
+      return "used";
+    }
     if (props.selectedNumbers.indexOf(number) >= 0) {
       return "selected";
     }
@@ -109,12 +129,23 @@ const Numbers = props => {
 };
 Numbers.list = _.range(1, 10);
 
+const DoneFrame = props => {
+  return (
+    <div className="text-center">
+      <h3>{props.doneStatus}</h3>
+    </div>
+  );
+};
 class Game extends React.Component {
+  static randomNumber = () => 1 + Math.floor(Math.random() * 9);
+
   state = {
     selectedNumbers: [],
-    randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+    randomNumberOfStars: Game.randomNumber(),
     answerIsCorrect: null,
-    usedNumbers: [4, 7]
+    usedNumbers: [],
+    redraws: 5,
+    doneStatus: "Game Over!"
   };
 
   selectedNumber = clikedNumber => {
@@ -145,13 +176,36 @@ class Game extends React.Component {
     }));
   };
 
+  acceptAnswer = () => {
+    this.setState(prevState => ({
+      usedNumbers: prevState.usedNumbers.concat(prevState.selectedNumbers),
+      selectedNumbers: [],
+      answerIsCorrect: null,
+      randomNumberOfStars: Game.randomNumber()
+    }));
+  };
+
+  redraw = () => {
+    if (this.state.redraws === 0) {
+      return;
+    }
+    this.setState(prevState => ({
+      randomNumberOfStars: Game.randomNumber(),
+      answerIsCorrect: null,
+      selectedNumbers: [],
+      redraws: prevState.redraws - 1
+    }));
+  };
+
   render() {
     // Esta constante me permite evitar el uso del termino <<this.state>>
     const {
       selectedNumbers,
       randomNumberOfStars,
       answerIsCorrect,
-      usedNumbers
+      usedNumbers,
+      redraws,
+      doneStatus
     } = this.state;
 
     return (
@@ -164,6 +218,9 @@ class Game extends React.Component {
             selectedNumbers={selectedNumbers}
             checkAnswer={this.checkAnswer}
             answerIsCorrect={answerIsCorrect}
+            acceptAnswer={this.acceptAnswer}
+            redraw={this.redraw}
+            redraws={redraws}
           />
           <Answer
             selectedNumbers={selectedNumbers}
@@ -176,6 +233,8 @@ class Game extends React.Component {
           selectedNumber={this.selectedNumber}
           usedNumbers={usedNumbers}
         />
+        <br />
+        <DoneFrame doneStatus={doneStatus} />
       </div>
     );
   }
