@@ -171,7 +171,7 @@ class Game extends React.Component {
     randomNumberOfStars: Game.randomNumber(),
     answerIsCorrect: null,
     usedNumbers: [],
-    redraws: 20,
+    redraws: 5,
     doneStatus: null // "Game Over!"
   };
 
@@ -234,6 +234,7 @@ class Game extends React.Component {
     const possibleNumbers = _.range(1, 10).filter(
       number => usedNumbers.indexOf(number) === -1
     );
+    return possibleCombinationSum(possibleNumbers, randomNumberOfStars);
   };
 
   updateDoneStatus = () => {
