@@ -160,7 +160,7 @@ const DoneFrame = props => {
   return (
     <div className="text-center">
       <h3>{props.doneStatus}</h3>
-      <button className="btn btn-secondary" onClick={props.reset}>
+      <button className="btn btn-secondary" onClick={props.resetGame}>
         Play Again
       </button>
     </div>
@@ -169,15 +169,18 @@ const DoneFrame = props => {
 
 class Game extends React.Component {
   static randomNumber = () => 1 + Math.floor(Math.random() * 9);
-
-  state = {
+  static initialState = () => ({
     selectedNumbers: [],
     randomNumberOfStars: Game.randomNumber(),
     answerIsCorrect: null,
     usedNumbers: [],
     redraws: 5,
     doneStatus: null // "Game Over!"
-  };
+  });
+
+  state = Game.initialState();
+
+  resetGame = () => this.setState(Game.initialState());
 
   selectedNumber = clikedNumber => {
     if (this.state.selectedNumbers.indexOf(clikedNumber) >= 0) {
@@ -252,17 +255,6 @@ class Game extends React.Component {
     });
   };
 
-  reset = () => {
-    this.setState({
-      selectedNumbers: [],
-      randomNumberOfStars: Game.randomNumber(),
-      answerIsCorrect: null,
-      usedNumbers: [],
-      redraws: 5,
-      doneStatus: null
-    });
-  };
-
   render() {
     // Esta constante me permite evitar el uso del termino <<this.state>>
     const {
@@ -296,7 +288,7 @@ class Game extends React.Component {
         <br />
 
         {doneStatus ? (
-          <DoneFrame doneStatus={doneStatus} reset={this.reset} />
+          <DoneFrame doneStatus={doneStatus} resetGame={this.resetGame} />
         ) : (
           <Numbers
             selectedNumbers={selectedNumbers}
